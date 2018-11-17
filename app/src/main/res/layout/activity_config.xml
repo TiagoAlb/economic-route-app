@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ConfigActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Switch
+            android:id="@+id/considerar_tempo"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="19dp"
+            android:layout_marginLeft="19dp"
+            android:layout_marginTop="23dp"
+            android:checked="true"
+            android:text="Considerar postos "
+            android:textColor="@color/md_grey_700"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="16dp" />
+
+        <Switch
+            android:id="@+id/considerar_distancia"
+            android:layout_width="347dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="21dp"
+            android:layout_marginLeft="21dp"
+            android:layout_marginTop="51dp"
+            android:checked="true"
+            android:text="Considerar distância"
+            android:textColor="@color/md_grey_700"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="43dp" />
+
+        <Switch
+            android:id="@+id/considerar_postos"
+            android:layout_width="346dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="22dp"
+            android:layout_marginLeft="22dp"
+            android:layout_marginBottom="406dp"
+            android:checked="true"
+            android:text="Considerar tempo"
+            android:textColor="@color/md_grey_700"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="70dp" />
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>

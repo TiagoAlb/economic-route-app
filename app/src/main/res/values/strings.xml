@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Economic Route</string>
+    <string name="access_token" translatable="false">pk.eyJ1IjoidGlhZ29hYnVxdWVycXVlIiwiYSI6ImNqbHc1NjI3dDE0YjczdW14N21wN25lZDkifQ.RGfFTERoL1_04wvU9xEnnw</string>
+    <string name="button_navigation_start">COMEÇAR</string>
+    <string name="search_origin">Onde você está?</string>
+    <string name="search_destiny">Para onde vamos?</string>
+
+    <string name="user_location_permission_explanation">This app needs location permissions in order to show its functionality.</string>
+    <string name="user_location_permission_not_granted">You didn\'t grant location permissions.</string>
+</resources>
