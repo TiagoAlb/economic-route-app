@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ImageButton settings;
     private ImageButton user_location;
     private ImageButton open_search_simulate_origin;
-    private ImageButton new_car;
+    private ImageButton manage_vehicle;
     private EditText search_origin;
     private TextView distance_view;
     private TextView price_fuel_view;
@@ -124,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         box_input_search_origin = findViewById(R.id.box_input_search_origin);
         considerar_postos = findViewById(R.id.considerar_postos);
         settings = findViewById(R.id.settings);
+        manage_vehicle = findViewById(R.id.manage_vehicle);
 
         onClickButton();
     }
@@ -263,6 +264,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ConfigActivity.class);
                 intent.putExtra("intentName", "Configurações");
+                startActivity(intent);
+            }
+        });
+
+        manage_vehicle.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ManageVehicleActivity.class);
+                intent.putExtra("intentName", "Gerenciar Veículos");
                 startActivity(intent);
             }
         });

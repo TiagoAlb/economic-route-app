@@ -17,6 +17,7 @@
         <item name="height">42dp</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="background">@color/colorPrimaryDark</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
 
         <!-- Support library compatibility -->
         <item name="android:background">@color/colorPrimaryDark</item>
