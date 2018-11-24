@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#F8F8F8</color>
-    <color name="colorPrimaryDark">#F8F8F8</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="yellowColor">#FCD116</color>
+    <color name="primary">#FFC107</color>
+    <color name="primary_dark">#FFA000</color>
+    <color name="primary_light">#FFECB3</color>
+    <color name="accent">#FFC107</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#757575</color>
+    <color name="icons">#212121</color>
+    <color name="divider">#BDBDBD</color>
+    <color name="toolbar_color">#212121</color>
+    <color name="toolbar_text_color">#f5f5f5</color>
 
     <color name="mapboxWhite">#ffffff</color>
     <color name="mapboxGreen">#79c95e</color>
@@ -13,4 +19,6 @@
     <color name="mapboxPink">#ee4e8b</color>
     <color name="mapboxYellow">#d9d838</color>
     <color name="mapboxRed">#b43b71</color>
+
+    <color name="buttonColor">#F7E672</color>
 </resources>

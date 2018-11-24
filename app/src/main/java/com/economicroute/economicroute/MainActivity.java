@@ -5,10 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.GnssStatus;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 // classes needed to initialize map
+import com.economicroute.economicroute.adapter.GeocoderAdapter;
 import com.economicroute.economicroute.model.Gas_station;
 import com.economicroute.economicroute.model.Route;
 import com.mapbox.geocoder.service.models.GeocoderFeature;
@@ -126,7 +131,34 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         settings = findViewById(R.id.settings);
         manage_vehicle = findViewById(R.id.manage_vehicle);
 
+        LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+        boolean isOn = manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        if(!isOn){
+          createNoGpsDialog();
+        }
         onClickButton();
+    }
+
+    private void createNoGpsDialog(){
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        Intent callGPSSettingIntent = new Intent(
+                                android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(callGPSSettingIntent);
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog mNoGpsDialog = builder.setMessage("Por favor ative seu GPS para usar esse aplicativo.")
+                .setPositiveButton("Ativar", dialogClickListener)
+                .create();
+        mNoGpsDialog.show();
     }
 
     @Override

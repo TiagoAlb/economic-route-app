@@ -1,4 +1,4 @@
-package com.economicroute.economicroute;
+package com.economicroute.economicroute.adapter;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -10,6 +10,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 
+import com.economicroute.economicroute.Constants;
 import com.mapbox.geocoder.MapboxGeocoder;
 import com.mapbox.geocoder.service.models.GeocoderFeature;
 import com.mapbox.geocoder.service.models.GeocoderResponse;

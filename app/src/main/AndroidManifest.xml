@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".application.CustomApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_logo"
         android:label="@string/app_name"
@@ -15,7 +16,7 @@
         android:supportsRtl="true">
         <activity
             android:name=".MainActivity"
-            android:theme="@style/AppThemeNoActionBar">
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,13 +25,13 @@
         </activity>
         <activity
             android:name=".ConfigActivity"
-            android:theme="@style/Theme.AppCompat.Light" />
+            android:theme="@style/AppThemeActionBarEconomicRoute" />
         <activity
             android:name=".NewVehicleActivity"
-            android:theme="@style/Theme.AppCompat.Light" />
+            android:theme="@style/AppThemeActionBarEconomicRoute" />
         <activity
             android:name=".ManageVehicleActivity"
-            android:theme="@style/AppCompatLightStyle" />
+            android:theme="@style/AppThemeActionBarEconomicRoute" />
     </application>
 
 </manifest>

@@ -6,8 +6,7 @@ import io.realm.annotations.PrimaryKey;
 public class Fuel extends RealmObject {
     @PrimaryKey
     private int id;
-    private int name;
-    private int price;
+    private String name;
 
     public int getId() {
         return id;
@@ -17,19 +16,7 @@ public class Fuel extends RealmObject {
         this.id = id;
     }
 
-    public int getName() {
-        return name;
-    }
+    public String getName() { return name; }
 
-    public void setName(int name) {
-        this.name = name;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
+    public void setName(String name) { this.name = name; }
 }

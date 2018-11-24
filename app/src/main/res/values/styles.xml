@@ -1,30 +1,26 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
     </style>
 
-    <style name="AppCompatLightStyle" parent="Theme.AppCompat.Light">
+    <style name="AppThemeActionBarEconomicRoute" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="actionBarStyle">@style/AppCompatLightStyleProperties</item>
+        <item name="colorPrimaryDark">@color/toolbar_color</item>
+        <!-- <item name="android:windowLightStatusBar" tools:targetApi="23">true</item> -->
     </style>
 
     <style name="AppCompatLightStyleProperties"
         parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="height">42dp</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="background">@color/colorPrimaryDark</item>
+        <item name="background">@color/toolbar_color</item>
+        <item name="android:textColor">@color/toolbar_text_color</item>
 
         <!-- Support library compatibility -->
-        <item name="android:background">@color/colorPrimaryDark</item>
-        <item name="android:height">42dp</item>
-        <item name="android:layout_gravity">center</item>
-    </style>
-
-    <style name="AppThemeNoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:background">@color/toolbar_color</item>
     </style>
 
     <style name="NavigationMapRoute">

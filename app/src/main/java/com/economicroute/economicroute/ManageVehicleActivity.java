@@ -1,207 +1,143 @@
 package com.economicroute.economicroute;
 
-import android.companion.CompanionDeviceManager;
-import android.graphics.Color;
-import android.os.AsyncTask;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.Toolbar;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.economicroute.economicroute.adapter.ManageVehicleAdapter;
+import com.economicroute.economicroute.model.Fuel;
+import com.economicroute.economicroute.model.Vehicle;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import java.util.UUID;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmResults;
+
 
 public class ManageVehicleActivity extends AppCompatActivity {
+    private Realm realm;
+    private Vehicle vehicle;
 
-    private String [] typeVehicle = new String [] {
-            "Carro",
-            "Moto",
-            "Caminhão"
-    };
+    TextView vehicle_use_name;
+    TextView vehicle_use_brand;
+    TextView vehicle_use_fuel;
+    TextView vehicle_use_fuel_quantity;
+    LinearLayout vehicle_use;
+    TextView toolbar_title;
 
-    private int [] idsVehiclesBrand;
-    private int [] idsVehiclesYear;
-    private int [] idsVehiclesName;
-
-    private Spinner spinner_type_vehicle;
-    private Spinner spinner_brand_vehicle;
-    private Spinner spinner_name_vehicle;
-    private Spinner spinner_year_vehicle;
-    private String BASE_URL = "http://fipeapi.appspot.com/api/1/";
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_vehicle);
         Bundle bundleTitle = getIntent().getExtras();
-        setTitle(bundleTitle.getString("intentName"));
+        toolbar_title = findViewById(R.id.toolbar_title);
+        toolbar_title.setText(bundleTitle.getString("intentName"));
+        realm = Realm.getDefaultInstance();
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, typeVehicle);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // RealmResults are "live" views, that are automatically kept up to date, even when changes happen
+        // on a background thread. The RealmBaseAdapter will automatically keep track of changes and will
+        // automatically refresh when a change is detected.
+        RealmResults<Vehicle> vehicles = realm.where(Vehicle.class).findAll();
 
-        spinner_type_vehicle = findViewById(R.id.spinner_type_vehicle);
-        spinner_brand_vehicle = findViewById(R.id.spinner_brand_vehicle);
-        spinner_name_vehicle = findViewById(R.id.spinner_name_vehicle);
-        spinner_year_vehicle = findViewById(R.id.spinner_year_vehicle);
+        vehicle_use_name = findViewById(R.id.vehicle_use_name);
+        vehicle_use_brand = findViewById(R.id.vehicle_use_brand);
+        vehicle_use_fuel = findViewById(R.id.vehicle_use_fuel);
+        vehicle_use_fuel_quantity = findViewById(R.id.vehicle_use_fuel_quantity);
+        vehicle_use = findViewById(R.id.vehicle_use);
 
-        spinner_type_vehicle.setAdapter(adapter);
-        //getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
-        onButtonClick();
-    }
+        final ManageVehicleAdapter adapter = new ManageVehicleAdapter(this, vehicles);
 
-    public void onButtonClick() {
-        spinner_type_vehicle.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        ListView listView = findViewById(R.id.vehicle_list);
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                changeRequest("brand");
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-        spinner_brand_vehicle.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                changeRequest("name");
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                final Vehicle vehicle = (Vehicle) adapterView.getAdapter().getItem(i);
+                final EditText vehicleEditText = new EditText(ManageVehicleActivity.this);
+                vehicleEditText.setText(vehicle.getName());
             }
         });
-        spinner_name_vehicle.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                changeRequest("year");
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
+        Button new_vehicle = findViewById(R.id.new_vehicle);
+        new_vehicle.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(ManageVehicleActivity.this, NewVehicleActivity.class);
+                intent.putExtra("intentName", "Cadastre um veículo");
+                startActivity(intent);
             }
         });
+
+        selectIsBeingUsedVehicle(-1);
     }
 
-    public void changeRequest(String typeRequest) {
-        String vehicle= "";
-        if (spinner_type_vehicle.getSelectedItemPosition()!=2)
-            vehicle = spinner_type_vehicle.getSelectedItem() + "s";
-        else
-            vehicle = "Caminhoes";
-
-        if (typeRequest == "brand") {
-            Request request = new Request.Builder()
-                    .url(BASE_URL+vehicle+"/marcas.json")
-                    .build();
-            getResultFipeApi(request, typeRequest);
-        } else if (typeRequest == "name") {
-            Request request = new Request.Builder()
-                    .url(BASE_URL+vehicle+"/veiculos/"+idsVehiclesBrand[spinner_brand_vehicle.getSelectedItemPosition()]+".json")
-                    .build();
-            getResultFipeApi(request, typeRequest);
-        } else {
-            Request request = new Request.Builder()
-                    .url(BASE_URL+vehicle+"/veiculos/"+idsVehiclesBrand[spinner_brand_vehicle.getSelectedItemPosition()]+"/"+idsVehiclesName[spinner_name_vehicle.getSelectedItemPosition()]+".json")
-                    .build();
-            getResultFipeApi(request, typeRequest);
-        }
-    }
-
-    public void setVehicleBrand(JSONArray vehicleBrand) throws JSONException {
-        String [] brands = new String [vehicleBrand.length()];
-        idsVehiclesBrand = new int [vehicleBrand.length()];
-        for (int i=0; i < vehicleBrand.length(); i++) {
-            JSONObject jsonObject = vehicleBrand.getJSONObject(i);
-            brands[i] = jsonObject.getString("name");
-            idsVehiclesBrand[i] = jsonObject.getInt("id");
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, brands);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner_brand_vehicle.setAdapter(adapter);
-    }
-
-    public void setVehicleName(JSONArray vehicleName) throws JSONException {
-        String [] names = new String [vehicleName.length()];
-        idsVehiclesName = new int [vehicleName.length()];
-        for (int i=0; i < vehicleName.length(); i++) {
-            JSONObject jsonObject = vehicleName.getJSONObject(i);
-            names[i] = jsonObject.getString("name");
-            idsVehiclesName[i] = jsonObject.getInt("id");
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, names);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner_name_vehicle.setAdapter(adapter);
-    }
-
-    public void setVehicleYear(JSONArray vehicleYear) throws JSONException {
-        String [] years = new String [vehicleYear.length()];
-        idsVehiclesYear = new int [vehicleYear.length()];
-        for (int i=0; i < vehicleYear.length(); i++) {
-            JSONObject jsonObject = vehicleYear.getJSONObject(i);
-
-            /*
-            if (jsonObject.getString("name").length()>15)
-                years[i] = jsonObject.getString("name").substring(1, 7);
-            else
-              years[i] = jsonObject.getString("name").substring(1, 4);
-*/
-
-            years[i] = jsonObject.getString("name");
-            idsVehiclesYear[i] = jsonObject.getInt("id");
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, years);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner_year_vehicle.setAdapter(adapter);
-    }
-
-    public void getResultFipeApi(Request request, String typeRequest) {
-        OkHttpClient client = new OkHttpClient();
-        client.newCall(request).enqueue(new Callback()  {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
+    public void selectIsBeingUsedVehicle(final int vehicleId) {
+        vehicle = new Vehicle();
+        vehicle = realm.where(Vehicle.class).equalTo("id", vehicleId).findFirst();
+        if(vehicle!=null) {
+            if (vehicle.isBeingUsed() && vehicleId != -1) {
+                vehicle_use_name.setText(vehicle.getName());
+                vehicle_use_brand.setText(vehicle.getBrand() + " - " + vehicle.getType());
+                vehicle_use_fuel.setText(vehicle.getFuel().get(0).getName());
+                vehicle_use_fuel_quantity.setText(vehicle.getFuel_quantity() + " / " + vehicle.getTank());
+                vehicle_use.setVisibility(View.VISIBLE);
+            } else {
+                vehicle_use.setVisibility(View.GONE);
             }
+        }
+    }
 
+    public void changeVehicleSelected(final int vehicleId) {
+        realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String myResponse = response.body().string();
+            public void execute(Realm realm) {
+                vehicle = new Vehicle();
+                vehicle = realm.where(Vehicle.class).equalTo("isBeingUsed", true).findFirst();
+                if((vehicle!=null)&&vehicle.isValid()&&(vehicle.getId()!=vehicleId)) {
+                    vehicle.setBeingUsed(false);
 
-                    ManageVehicleActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                JSONArray arrayJson = new JSONArray(myResponse);
-                                if (typeRequest == "brand")
-                                    setVehicleBrand(arrayJson);
-                                else if (typeRequest == "name")
-                                    setVehicleName(arrayJson);
-                                else
-                                    setVehicleYear(arrayJson);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
+                    try {
+                        realm.beginTransaction();
+                        realm.copyToRealmOrUpdate(vehicle);
+                        realm.commitTransaction();
+                        finish();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                vehicle = realm.where(Vehicle.class).equalTo("id", vehicleId).findFirst();
+                vehicle.setBeingUsed(!vehicle.isBeingUsed());
+
+                try {
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(vehicle);
+                    realm.commitTransaction();
+                    finish();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         });
+        selectIsBeingUsedVehicle(vehicleId);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        realm.close();
     }
 }
 

@@ -1,11 +1,11 @@
 <component name="libraryTable">
   <library name="Gradle: com.mapbox.mapboxsdk:mapbox-android-geocoder-1.0.0">
     <ANNOTATIONS>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/mapbox-android-geocoder-1.0.0.aar/aa55a4483a77995344a5f11f191e75d8/annotations.zip!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/mapbox-android-geocoder-1.0.0.aar/a7bd694af0745951b7de36feacc9a403/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/mapbox-android-geocoder-1.0.0.aar/aa55a4483a77995344a5f11f191e75d8/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/mapbox-android-geocoder-1.0.0.aar/aa55a4483a77995344a5f11f191e75d8/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/mapbox-android-geocoder-1.0.0.aar/a7bd694af0745951b7de36feacc9a403/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/mapbox-android-geocoder-1.0.0.aar/a7bd694af0745951b7de36feacc9a403/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

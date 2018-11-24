@@ -230,7 +230,7 @@
                     android:layout_marginLeft="0dp"
                     android:layout_marginBottom="0dp"
                     android:background="@color/mapboxGrayLight"
-                    android:enabled="true"
+                    android:enabled="false"
                     android:padding="5px"
                     android:text="@string/button_navigation_start"
                     android:textColor="@color/mapboxWhite"
