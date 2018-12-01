@@ -3,21 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="10dp"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
             android:gravity="top"
             android:orientation="horizontal">
 
@@ -58,17 +58,19 @@
                                 android:id="@+id/vehicle_name"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:ellipsize="end"
                                 android:maxLength="22"
                                 android:maxLines="1"
-                                android:ellipsize="end"
-                                android:text="Celta Life Flex 4p"
-                                android:textAppearance="?android:attr/textAppearanceMedium" />
+                                android:text="Nome do Veículo"
+                                android:textAppearance="?android:attr/textAppearanceMedium"
+                                android:textColor="@color/secondary_text" />
 
                             <TextView
                                 android:id="@+id/vehicle_brand"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Chevrolet" />
+                                android:text="Marca"
+                                android:textColor="@color/secondary_text" />
 
                         </LinearLayout>
 
@@ -89,10 +91,11 @@
                                     android:orientation="vertical">
 
                                     <TextView
-                                        android:id="@+id/vehicle_fuel"
+                                        android:id="@+id/vehicle_fuel_name"
                                         android:layout_width="110dp"
                                         android:layout_height="wrap_content"
-                                        android:text="Gasolina" />
+                                        android:text="Combustível"
+                                        android:textColor="@color/secondary_text" />
                                 </LinearLayout>
 
                                 <LinearLayout
@@ -117,7 +120,8 @@
                                             android:id="@+id/vehicle_fuel_quantity"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
-                                            android:text="10 / 30 Litros" />
+                                            android:text="Qtd / Total Litros"
+                                            android:textColor="@color/secondary_text" />
                                     </LinearLayout>
                                 </LinearLayout>
                             </LinearLayout>
@@ -147,6 +151,16 @@
             </LinearLayout>
 
         </LinearLayout>
+
     </LinearLayout>
+
+    <View
+        android:id="@+id/view3"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@color/divider"
+        android:focusable="false" />
 
 </LinearLayout>

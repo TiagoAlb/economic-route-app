@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.economicroute.economicroute.model.Fuel;
@@ -40,17 +41,16 @@ public class NewVehicleActivity extends AppCompatActivity {
 
     private Realm realm;
     private RealmResults<Vehicle> vehicles;
-    private Vehicle vehicle;
 
-    private String [] typeVehicle = new String [] {
+    private String[] typeVehicle = new String[]{
             "Carro",
             "Moto",
             "Caminhão"
     };
 
-    private int [] idsVehiclesBrand;
-    private String [] idsVehiclesYear;
-    private int [] idsVehiclesName;
+    private int[] idsVehiclesBrand;
+    private String[] idsVehiclesYear;
+    private int[] idsVehiclesName;
 
     private Spinner spinner_type_vehicle;
     private Spinner spinner_brand_vehicle;
@@ -64,12 +64,15 @@ public class NewVehicleActivity extends AppCompatActivity {
     private EditText input_plate_vehicle;
     private Button register_vehicle;
 
+    private TextView toolbar_title;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_vehicle);
         Bundle bundleTitle = getIntent().getExtras();
-        setTitle(bundleTitle.getString("intentName"));
+        toolbar_title = findViewById(R.id.toolbar_title);
+        toolbar_title.setText(bundleTitle.getString("intentName"));
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, typeVehicle);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -85,9 +88,7 @@ public class NewVehicleActivity extends AppCompatActivity {
         register_vehicle = findViewById(R.id.register_vehicle);
 
         spinner_type_vehicle.setAdapter(adapter);
-
         realm = Realm.getDefaultInstance();
-        vehicles = realm.where(Vehicle.class).findAll();
 
         onButtonClick();
     }
@@ -139,18 +140,20 @@ public class NewVehicleActivity extends AppCompatActivity {
         });
         input_tank_vehicle.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
             @Override
             public void afterTextChanged(Editable editable) {
                 String tankText = editable.toString();
                 String consumptionText = input_consumption_vehicle.getText().toString();
 
-                if (((!tankText.isEmpty())&&(!tankText.equals(null))&&(!tankText.equals("0")))
-                        &&((!consumptionText.isEmpty())&&(!consumptionText.equals(null))&&(!consumptionText.equals("0")))) {
+                if (((!tankText.isEmpty()) && (!tankText.equals(null)) && (!tankText.equals("0")))
+                        && ((!consumptionText.isEmpty()) && (!consumptionText.equals(null)) && (!consumptionText.equals("0")))) {
                     register_vehicle.setEnabled(true);
                     register_vehicle.setVisibility(View.VISIBLE);
                 } else {
@@ -161,18 +164,20 @@ public class NewVehicleActivity extends AppCompatActivity {
         });
         input_consumption_vehicle.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
             @Override
             public void afterTextChanged(Editable editable) {
                 String consumptionText = editable.toString();
                 String tankText = input_tank_vehicle.getText().toString();
 
-                if (((!tankText.isEmpty())&&(!tankText.equals(null))&&(!tankText.equals("0")))
-                        &&((!consumptionText.isEmpty())&&(!consumptionText.equals(null))&&(!consumptionText.equals("0")))) {
+                if (((!tankText.isEmpty()) && (!tankText.equals(null)) && (!tankText.equals("0")))
+                        && ((!consumptionText.isEmpty()) && (!consumptionText.equals(null)) && (!consumptionText.equals("0")))) {
                     register_vehicle.setEnabled(true);
                     register_vehicle.setVisibility(View.VISIBLE);
                 } else {
@@ -189,46 +194,35 @@ public class NewVehicleActivity extends AppCompatActivity {
         });
     }
 
-    public void registerVehicle( View view ) {
-        vehicle = new Vehicle();
-        String label = "atualizado";
-        if (vehicle.getId() == 0) {
-            int id = vehicles.size() == 0 ? 1 : vehicles.size() + 1;
-            vehicle.setId(id);
-            label = "adicionado";
-        }
+    public void registerVehicle(View view) {
+        Vehicle vehicle = new Vehicle();
+
+        vehicle.setId(realm.where(Vehicle.class).findAll().size()+1);
+        vehicle.setType(spinner_type_vehicle.getSelectedItem().toString());
+        vehicle.setName(spinner_name_vehicle.getSelectedItem().toString());
+        vehicle.setBrand(spinner_brand_vehicle.getSelectedItem().toString());
+        vehicle.setYear(spinner_year_vehicle.getSelectedItem().toString());
+        vehicle.setFuel_name(spinner_fuel_vehicle.getSelectedItem().toString());
+        vehicle.setPlate(input_plate_vehicle.getText().toString());
+        vehicle.setTank(Double.parseDouble(input_tank_vehicle.getText().toString()));
+        vehicle.setConsumption(Double.parseDouble(input_consumption_vehicle.getText().toString()));
 
         try {
             realm.beginTransaction();
-            vehicle.setType(spinner_type_vehicle.getSelectedItem().toString());
-            vehicle.setName(spinner_name_vehicle.getSelectedItem().toString());
-            vehicle.setBrand(spinner_brand_vehicle.getSelectedItem().toString());
-            vehicle.setYear(spinner_year_vehicle.getSelectedItem().toString());
-
-            RealmList<Fuel> fuelList = new RealmList<>();
-            Fuel fuel = new Fuel();
-            fuel.setId(spinner_fuel_vehicle.getSelectedItemPosition());
-            fuel.setName(spinner_fuel_vehicle.getSelectedItem().toString());
-            fuelList.add(fuel);
-
-            vehicle.setFuel(fuelList);
-            vehicle.setPlate(input_plate_vehicle.getText().toString());
-            vehicle.setTank(Double.parseDouble(input_tank_vehicle.getText().toString()));
-            vehicle.setConsumption(Double.parseDouble(input_consumption_vehicle.getText().toString()));
             realm.copyToRealmOrUpdate(vehicle);
             realm.commitTransaction();
 
-            Toast.makeText(NewVehicleActivity.this, "Veículo " + label, Toast.LENGTH_SHORT).show();
+            Toast.makeText(NewVehicleActivity.this, "Sucesso! Veículo "+vehicle.getName()+" adicionado.", Toast.LENGTH_SHORT).show();
             finish();
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(NewVehicleActivity.this, "Falhou!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(NewVehicleActivity.this, "Erro! "+e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
     public void changeRequest(String typeRequest) {
-        String vehicle= "";
-        if (spinner_type_vehicle.getSelectedItemPosition()!=2)
+        String vehicle = "";
+        if (spinner_type_vehicle.getSelectedItemPosition() != 2)
             vehicle = spinner_type_vehicle.getSelectedItem() + "s";
         else
             vehicle = "Caminhoes";
@@ -237,32 +231,32 @@ public class NewVehicleActivity extends AppCompatActivity {
 
         if (typeRequest == "brand") {
             Request request = new Request.Builder()
-                    .url(BASE_URL+vehicle+"/marcas.json")
+                    .url(BASE_URL + vehicle + "/marcas.json")
                     .build();
             System.out.println(request.url());
             getResultFipeApi(request, typeRequest);
         } else if (typeRequest == "name") {
             Request request = new Request.Builder()
-                    .url(BASE_URL+vehicle+"/veiculos/"+idsVehiclesBrand[spinner_brand_vehicle.getSelectedItemPosition()]+".json")
+                    .url(BASE_URL + vehicle + "/veiculos/" + idsVehiclesBrand[spinner_brand_vehicle.getSelectedItemPosition()] + ".json")
                     .build();
             getResultFipeApi(request, typeRequest);
         } else if (typeRequest == "year") {
             Request request = new Request.Builder()
-                    .url(BASE_URL+vehicle+"/veiculo/"+idsVehiclesBrand[spinner_brand_vehicle.getSelectedItemPosition()]+"/"+idsVehiclesName[spinner_name_vehicle.getSelectedItemPosition()]+".json")
+                    .url(BASE_URL + vehicle + "/veiculo/" + idsVehiclesBrand[spinner_brand_vehicle.getSelectedItemPosition()] + "/" + idsVehiclesName[spinner_name_vehicle.getSelectedItemPosition()] + ".json")
                     .build();
             getResultFipeApi(request, typeRequest);
         } else {
             Request request = new Request.Builder()
-                    .url(BASE_URL+vehicle+"/veiculo/"+idsVehiclesBrand[spinner_brand_vehicle.getSelectedItemPosition()]+"/"+idsVehiclesName[spinner_name_vehicle.getSelectedItemPosition()]+"/"+idsVehiclesYear[spinner_year_vehicle.getSelectedItemPosition()]+".json")
+                    .url(BASE_URL + vehicle + "/veiculo/" + idsVehiclesBrand[spinner_brand_vehicle.getSelectedItemPosition()] + "/" + idsVehiclesName[spinner_name_vehicle.getSelectedItemPosition()] + "/" + idsVehiclesYear[spinner_year_vehicle.getSelectedItemPosition()] + ".json")
                     .build();
             getResultFipeApi(request, typeRequest);
         }
     }
 
     public void setVehicleBrand(JSONArray vehicleBrand) throws JSONException {
-        String [] brands = new String [vehicleBrand.length()];
-        idsVehiclesBrand = new int [vehicleBrand.length()];
-        for (int i=0; i < vehicleBrand.length(); i++) {
+        String[] brands = new String[vehicleBrand.length()];
+        idsVehiclesBrand = new int[vehicleBrand.length()];
+        for (int i = 0; i < vehicleBrand.length(); i++) {
             JSONObject jsonObject = vehicleBrand.getJSONObject(i);
             brands[i] = jsonObject.getString("name");
             idsVehiclesBrand[i] = jsonObject.getInt("id");
@@ -273,9 +267,9 @@ public class NewVehicleActivity extends AppCompatActivity {
     }
 
     public void setVehicleName(JSONArray vehicleName) throws JSONException {
-        String [] names = new String [vehicleName.length()];
-        idsVehiclesName = new int [vehicleName.length()];
-        for (int i=0; i < vehicleName.length(); i++) {
+        String[] names = new String[vehicleName.length()];
+        idsVehiclesName = new int[vehicleName.length()];
+        for (int i = 0; i < vehicleName.length(); i++) {
             JSONObject jsonObject = vehicleName.getJSONObject(i);
             names[i] = jsonObject.getString("name");
             idsVehiclesName[i] = jsonObject.getInt("id");
@@ -286,12 +280,12 @@ public class NewVehicleActivity extends AppCompatActivity {
     }
 
     public void setVehicleYear(JSONArray vehicleYear) throws JSONException {
-        String [] years = new String [vehicleYear.length()];
-        idsVehiclesYear = new String [vehicleYear.length()];
-        for (int i=0; i < vehicleYear.length(); i++) {
+        String[] years = new String[vehicleYear.length()];
+        idsVehiclesYear = new String[vehicleYear.length()];
+        for (int i = 0; i < vehicleYear.length(); i++) {
             JSONObject jsonObject = vehicleYear.getJSONObject(i);
 
-            if (jsonObject.getString("name").length()>15)
+            if (jsonObject.getString("name").length() > 15)
                 years[i] = jsonObject.getString("name").substring(0, 7);
             else
                 years[i] = jsonObject.getString("name").substring(0, 4);
@@ -304,7 +298,7 @@ public class NewVehicleActivity extends AppCompatActivity {
     }
 
     public void setVehicleFuel(JSONObject vehicleFuel) throws JSONException {
-        String [] fuels = new String [1];
+        String[] fuels = new String[1];
         fuels[0] = vehicleFuel.getString("combustivel");
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, fuels);
@@ -314,7 +308,7 @@ public class NewVehicleActivity extends AppCompatActivity {
 
     public void getResultFipeApi(Request request, String typeRequest) {
         OkHttpClient client = new OkHttpClient();
-        client.newCall(request).enqueue(new Callback()  {
+        client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();

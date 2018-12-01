@@ -30,13 +30,13 @@ import io.realm.RealmResults;
 public class ManageVehicleActivity extends AppCompatActivity {
     private Realm realm;
     private Vehicle vehicle;
-
-    TextView vehicle_use_name;
-    TextView vehicle_use_brand;
-    TextView vehicle_use_fuel;
-    TextView vehicle_use_fuel_quantity;
-    LinearLayout vehicle_use;
-    TextView toolbar_title;
+    private TextView vehicle_use_name;
+    private TextView vehicle_use_brand;
+    private TextView vehicle_use_fuel;
+    private TextView vehicle_use_fuel_quantity;
+    private LinearLayout vehicle_use;
+    private TextView toolbar_title;
+    private ListView vehicle_list;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +44,7 @@ public class ManageVehicleActivity extends AppCompatActivity {
         Bundle bundleTitle = getIntent().getExtras();
         toolbar_title = findViewById(R.id.toolbar_title);
         toolbar_title.setText(bundleTitle.getString("intentName"));
+
         realm = Realm.getDefaultInstance();
 
         // RealmResults are "live" views, that are automatically kept up to date, even when changes happen
@@ -59,15 +60,21 @@ public class ManageVehicleActivity extends AppCompatActivity {
 
         final ManageVehicleAdapter adapter = new ManageVehicleAdapter(this, vehicles);
 
-        ListView listView = findViewById(R.id.vehicle_list);
-        listView.setAdapter(adapter);
+        vehicle_list= findViewById(R.id.vehicle_list);
+        vehicle_list.setAdapter(adapter);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        vehicle_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Object listItem = vehicle_list.getItemAtPosition(position);
+            }
+        });
+
+        vehicle_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 final Vehicle vehicle = (Vehicle) adapterView.getAdapter().getItem(i);
-                final EditText vehicleEditText = new EditText(ManageVehicleActivity.this);
-                vehicleEditText.setText(vehicle.getName());
+                selectIsBeingUsedVehicle(vehicle.getId());
             }
         });
 
@@ -75,7 +82,7 @@ public class ManageVehicleActivity extends AppCompatActivity {
         new_vehicle.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(ManageVehicleActivity.this, NewVehicleActivity.class);
-                intent.putExtra("intentName", "Cadastre um veículo");
+                intent.putExtra("intentName", "Cadastre um Veículo");
                 startActivity(intent);
             }
         });
@@ -85,17 +92,19 @@ public class ManageVehicleActivity extends AppCompatActivity {
 
     public void selectIsBeingUsedVehicle(final int vehicleId) {
         vehicle = new Vehicle();
-        vehicle = realm.where(Vehicle.class).equalTo("id", vehicleId).findFirst();
-        if(vehicle!=null) {
-            if (vehicle.isBeingUsed() && vehicleId != -1) {
-                vehicle_use_name.setText(vehicle.getName());
-                vehicle_use_brand.setText(vehicle.getBrand() + " - " + vehicle.getType());
-                vehicle_use_fuel.setText(vehicle.getFuel().get(0).getName());
-                vehicle_use_fuel_quantity.setText(vehicle.getFuel_quantity() + " / " + vehicle.getTank());
-                vehicle_use.setVisibility(View.VISIBLE);
-            } else {
-                vehicle_use.setVisibility(View.GONE);
-            }
+        if (vehicleId!=-1)
+            vehicle = realm.where(Vehicle.class).equalTo("id", vehicleId).findFirst();
+        else
+            vehicle = realm.where(Vehicle.class).equalTo("isBeingUsed", true).findFirst();
+
+        if(vehicle!=null&&vehicle.isValid()&&vehicle.isBeingUsed()) {
+            vehicle_use_name.setText(vehicle.getName());
+            vehicle_use_brand.setText(vehicle.getBrand() + " - " + vehicle.getType());
+            vehicle_use_fuel.setText(vehicle.getFuel_name());
+            vehicle_use_fuel_quantity.setText(vehicle.getFuel_quantity() + " / " + vehicle.getTank());
+            vehicle_use.setVisibility(View.VISIBLE);
+        } else {
+            vehicle_use.setVisibility(View.GONE);
         }
     }
 
@@ -105,7 +114,8 @@ public class ManageVehicleActivity extends AppCompatActivity {
             public void execute(Realm realm) {
                 vehicle = new Vehicle();
                 vehicle = realm.where(Vehicle.class).equalTo("isBeingUsed", true).findFirst();
-                if((vehicle!=null)&&vehicle.isValid()&&(vehicle.getId()!=vehicleId)) {
+
+                if ((vehicle != null) && vehicle.isValid() && (vehicle.getId() != vehicleId)) {
                     vehicle.setBeingUsed(false);
 
                     try {
@@ -117,21 +127,44 @@ public class ManageVehicleActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-
-                vehicle = realm.where(Vehicle.class).equalTo("id", vehicleId).findFirst();
-                vehicle.setBeingUsed(!vehicle.isBeingUsed());
-
-                try {
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(vehicle);
-                    realm.commitTransaction();
-                    finish();
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
-            }
-        });
-        selectIsBeingUsedVehicle(vehicleId);
+                }, new Realm.Transaction.OnSuccess() {
+                @Override
+                public void onSuccess() {
+                    realm.executeTransactionAsync(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            vehicle = realm.where(Vehicle.class).equalTo("id", vehicleId).findFirst();
+                            vehicle.setBeingUsed(!vehicle.isBeingUsed());
+
+                            try {
+                                realm.beginTransaction();
+                                realm.copyToRealmOrUpdate(vehicle);
+                                realm.commitTransaction();
+                                finish();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        }, new Realm.Transaction.OnSuccess() {
+                            @Override
+                            public void onSuccess() {
+                                selectIsBeingUsedVehicle(vehicleId);
+                            }
+                            }, new Realm.Transaction.OnError() {
+                                @Override
+                                public void onError(Throwable error) {
+                                    Toast.makeText(ManageVehicleActivity.this, "Erro ao alterar veículo utilizado atualmente!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                }
+            }, new Realm.Transaction.OnError() {
+                @Override
+                public void onError(Throwable error) {
+                    Toast.makeText(ManageVehicleActivity.this, "Erro ao alterar último veículo usado!", Toast.LENGTH_SHORT).show();
+                }
+            });
     }
 
     @Override

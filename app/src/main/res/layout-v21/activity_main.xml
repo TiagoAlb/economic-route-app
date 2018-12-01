@@ -27,6 +27,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
+                android:layout_marginTop="12dp"
                 android:padding="5dp">
 
                 <ImageButton
@@ -61,18 +62,6 @@
                     android:paddingBottom="0dp"
                     mapbox:srcCompat="@drawable/ic_tire" />
 
-                <Switch
-                    android:id="@+id/considerar_postos"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="143dp"
-                    android:layout_marginLeft="143dp"
-                    android:text="Considerar postos "
-                    android:textColor="@color/md_grey_700"
-                    android:checked="true" />
             </RelativeLayout>
 
             <LinearLayout

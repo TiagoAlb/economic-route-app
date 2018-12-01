@@ -12,13 +12,14 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/scrollView2" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ListView
         android:id="@+id/vehicle_list"
+        style="@style/Widget.AppCompat.ListView.DropDown"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="1dp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,7 +31,7 @@
         android:id="@+id/linearLayout3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/primary"
+        android:background="@color/vehicle_used_color"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -42,6 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:orientation="vertical"
+            android:visibility="visible"
             tools:layout_editor_absoluteX="15dp"
             tools:layout_editor_absoluteY="275dp">
 
@@ -51,6 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:text="Veículo em uso:"
+                android:textColor="@color/primary_text"
                 tools:layout_editor_absoluteX="45dp"
                 tools:layout_editor_absoluteY="360dp" />
 
@@ -91,13 +94,15 @@
                             android:maxLength="24"
                             android:maxLines="1"
                             android:text="Celta Life Flex 4p"
-                            android:textAppearance="?android:attr/textAppearanceMedium" />
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:textColor="@color/primary_text" />
 
                         <TextView
                             android:id="@+id/vehicle_use_brand"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Chevrolet" />
+                            android:text="Chevrolet"
+                            android:textColor="@color/primary_text" />
 
                     </LinearLayout>
 
@@ -120,7 +125,8 @@
                                     android:id="@+id/vehicle_use_fuel"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="Gasolina" />
+                                    android:text="Gasolina"
+                                    android:textColor="@color/primary_text" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -138,13 +144,14 @@
                                         android:id="@+id/imageView"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        app:srcCompat="@drawable/ic_fuel" />
+                                        app:srcCompat="@drawable/ic_fuel_vehicle_used" />
 
                                     <TextView
                                         android:id="@+id/vehicle_use_fuel_quantity"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:text="10 / 30 Litros" />
+                                        android:text="10 / 30 Litros"
+                                        android:textColor="@color/primary_text" />
                                 </LinearLayout>
                             </LinearLayout>
 

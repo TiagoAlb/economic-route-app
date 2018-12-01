@@ -22,11 +22,11 @@ public class ManageVehicleAdapter extends RealmBaseAdapter<Vehicle> implements L
     private ManageVehicleActivity activity;
 
     private static class ViewHolder {
-        TextView vehicle_name;
-        TextView vehicle_brand;
-        TextView vehicle_fuel;
-        TextView vehicle_fuel_quantity;
-        CheckBox choice_vehicle;
+        private TextView vehicle_name;
+        private TextView vehicle_brand;
+        private TextView vehicle_fuel_name;
+        private TextView vehicle_fuel_quantity;
+        private CheckBox choice_vehicle;
     }
 
     public ManageVehicleAdapter(ManageVehicleActivity activity, OrderedRealmCollection<Vehicle> data) {
@@ -43,7 +43,7 @@ public class ManageVehicleAdapter extends RealmBaseAdapter<Vehicle> implements L
             viewHolder = new ViewHolder();
             viewHolder.vehicle_name = (TextView) convertView.findViewById(R.id.vehicle_name);
             viewHolder.vehicle_brand = (TextView) convertView.findViewById(R.id.vehicle_brand);
-            viewHolder.vehicle_fuel = (TextView) convertView.findViewById(R.id.vehicle_fuel);
+            viewHolder.vehicle_fuel_name = (TextView) convertView.findViewById(R.id.vehicle_fuel_name);
             viewHolder.vehicle_fuel_quantity = (TextView) convertView.findViewById(R.id.vehicle_fuel_quantity);
             viewHolder.choice_vehicle = (CheckBox) convertView.findViewById(R.id.choice_vehicle);
             viewHolder.choice_vehicle.setOnClickListener(listener);
@@ -56,7 +56,7 @@ public class ManageVehicleAdapter extends RealmBaseAdapter<Vehicle> implements L
             Vehicle vehicle = adapterData.get(position);
             viewHolder.vehicle_name.setText(vehicle.getName());
             viewHolder.vehicle_brand.setText(vehicle.getBrand()+" - "+vehicle.getType());
-            viewHolder.vehicle_fuel.setText(vehicle.getFuel().get(0).getName());
+            viewHolder.vehicle_fuel_name.setText(vehicle.getFuel_name());
             viewHolder.vehicle_fuel_quantity.setText(vehicle.getFuel_quantity()+" / "+vehicle.getTank());
             viewHolder.choice_vehicle.setChecked(vehicle.isBeingUsed());
             viewHolder.choice_vehicle.setTag(position);

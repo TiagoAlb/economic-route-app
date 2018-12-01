@@ -1,5 +1,7 @@
 package com.economicroute.economicroute.model;
 
+import android.media.Image;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
@@ -19,6 +21,7 @@ public class Vehicle extends RealmObject {
     private double fuel_quantity;
     private boolean isBeingUsed;
     private RealmList<Fuel> fuel;
+    private String fuel_name;
 
     public int getId() {
         return id;
@@ -99,4 +102,8 @@ public class Vehicle extends RealmObject {
     public void setFuel(RealmList<Fuel> fuel) {
         this.fuel = fuel;
     }
+
+    public String getFuel_name() { return fuel_name; }
+
+    public void setFuel_name(String fuel_name) { this.fuel_name = fuel_name; }
 }
