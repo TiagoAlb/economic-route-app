@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Config config;
 
     //array models
-    Gas_station[] gasStation = new Gas_station[22];
+    List<Gas_station> gasStation = new ArrayList<Gas_station>(22);
     ArrayList<Gas_station> gasStation_route = new ArrayList<>();
     ArrayList<DirectionsRoute> routes = new ArrayList<>();
     ArrayList<ArrayList> gasStationRoutes = new ArrayList<>();
@@ -197,82 +197,68 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setGasStationMarkers(false);
     }
 
-    public void escondeTeclado (EditText input) {
+    public void hideBoard (EditText input) {
         ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
                 .hideSoftInputFromWindow(input.getWindowToken(), 0);
     }
 
     @Override
     public void onMapClick(@NonNull LatLng point){
-        escondeTeclado(input_search_origin);
-        escondeTeclado(input_search_destiny);
+        hideBoard(input_search_origin);
+        hideBoard(input_search_destiny);
         setMarker(point, "", true);
     }
 
     public void setArrayGasStation (){
-        gasStation[0] = new Gas_station("Posto 1", 4.379, new LatLng(-30.155677, -51.142399));
-        gasStation[1] = new Gas_station("Posto 2", 5.099, new LatLng(-30.148918, -51.148789));
-        gasStation[2] = new Gas_station("Posto 3", 4.946, new LatLng(-30.148083, -51.152083));
-        gasStation[3] = new Gas_station("Posto 4", 5.217, new LatLng(-30.159469, -51.147549));
-        gasStation[4] = new Gas_station("Posto 5", 4.583, new LatLng(-30.163546, -51.151135));
-        gasStation[5] = new Gas_station("Posto 6", 4.824, new LatLng(-30.145446, -51.129866));
-        gasStation[6] = new Gas_station("Posto 7", 4.253, new LatLng(-30.160141, -51.133555));
-        gasStation[7] = new Gas_station("Posto 8", 4.471, new LatLng(-30.163110, -51.144670));
-        gasStation[8] = new Gas_station("Posto 9", 5.164, new LatLng(-30.149301, -51.136607));
-        gasStation[9] = new Gas_station("Posto 10", 4.369, new LatLng(-30.150952, -51.161509));
-        gasStation[10] = new Gas_station("Posto 11", 5.212, new LatLng(-30.154217, -51.161208));
-        gasStation[11] = new Gas_station("Posto 12", 4.553, new LatLng(-30.157557, -51.183009));
-        gasStation[12] = new Gas_station("Posto 13", 5.136, new LatLng(-30.159152, -51.181335));
-        gasStation[13] = new Gas_station("Posto 14", 4.964, new LatLng(-30.162751, -51.181592));
-        gasStation[14] = new Gas_station("Posto 15", 4.774, new LatLng(-30.180263, -51.185878));
-        gasStation[15] = new Gas_station("Posto 16", 4.859, new LatLng(-30.185480, -51.161551));
-        gasStation[16] = new Gas_station("Posto 17", 4.326, new LatLng(-30.180849, -51.175788));
-        gasStation[17] = new Gas_station("Posto 18", 5.074, new LatLng(-30.178587, -51.173405));
-        gasStation[18] = new Gas_station("Posto 19", 5.212, new LatLng(-30.138013, -51.127486));
-        gasStation[19] = new Gas_station("Posto 20", 4.659, new LatLng(-30.179154, -51.179233));
-        gasStation[20] = new Gas_station("Posto 21", 4.819, new LatLng(-30.141310, -51.219289));
-        gasStation[21] = new Gas_station("Posto 22", 5.096, new LatLng(-30.126720, -51.185645));
+        gasStation.add(new Gas_station("Posto 1", 4.379, new LatLng(-30.155677, -51.142399)));
+        gasStation.add(new Gas_station("Posto 2", 5.099, new LatLng(-30.148918, -51.148789)));
+        gasStation.add(new Gas_station("Posto 3", 4.946, new LatLng(-30.148083, -51.152083)));
+        gasStation.add(new Gas_station("Posto 4", 5.217, new LatLng(-30.159469, -51.147549)));
+        gasStation.add(new Gas_station("Posto 5", 4.583, new LatLng(-30.163546, -51.151135)));
+        gasStation.add(new Gas_station("Posto 6", 4.824, new LatLng(-30.145446, -51.129866)));
+        gasStation.add(new Gas_station("Posto 7", 4.253, new LatLng(-30.160141, -51.133555)));
+        gasStation.add(new Gas_station("Posto 8", 4.471, new LatLng(-30.163110, -51.144670)));
+        gasStation.add(new Gas_station("Posto 9", 5.164, new LatLng(-30.149301, -51.136607)));
+        gasStation.add(new Gas_station("Posto 10", 4.369, new LatLng(-30.150952, -51.161509)));
+        gasStation.add(new Gas_station("Posto 11", 5.212, new LatLng(-30.154217, -51.161208)));
+        gasStation.add(new Gas_station("Posto 12", 4.553, new LatLng(-30.157557, -51.183009)));
+        gasStation.add(new Gas_station("Posto 13", 5.136, new LatLng(-30.159152, -51.181335)));
+        gasStation.add(new Gas_station("Posto 14", 4.964, new LatLng(-30.162751, -51.181592)));
+        gasStation.add(new Gas_station("Posto 15", 4.774, new LatLng(-30.180263, -51.185878)));
+        gasStation.add(new Gas_station("Posto 16", 4.859, new LatLng(-30.185480, -51.161551)));
+        gasStation.add(new Gas_station("Posto 17", 4.326, new LatLng(-30.180849, -51.175788)));
+        gasStation.add(new Gas_station("Posto 18", 5.074, new LatLng(-30.178587, -51.173405)));
+        gasStation.add(new Gas_station("Posto 19", 5.212, new LatLng(-30.138013, -51.127486)));
+        gasStation.add(new Gas_station("Posto 20", 4.659, new LatLng(-30.179154, -51.179233)));
+        gasStation.add(new Gas_station("Posto 21", 4.819, new LatLng(-30.141310, -51.219289)));
+        gasStation.add(new Gas_station("Posto 22", 5.096, new LatLng(-30.126720, -51.185645)));
 
-        double best_price=gasStation[0].getPrice_gas();
-        double worst_price=0;
-        double price_factor=0;
-        for (int i=0; i<gasStation.length; i++){
-            if (gasStation[i].getPrice_gas()>=worst_price){
-                worst_price = gasStation[i].getPrice_gas();
-            }
-            if (gasStation[i].getPrice_gas()<=best_price){
-                best_price = gasStation[i].getPrice_gas();
-            }
-        }
-        price_factor=(worst_price+best_price)/2;
-        double middle_final=(worst_price+price_factor)/2;
-        double middle_initial=(best_price+price_factor)/2;
-        for (int i=0; i<gasStation.length; i++){
-            if (gasStation[i].getPrice_gas()<=middle_initial){
-                gasStation[i].setPrice_priority(1);
-            }else if ((gasStation[i].getPrice_gas()>middle_initial)&&(gasStation[i].getPrice_gas()<=middle_final)){
-                gasStation[i].setPrice_priority(2);
-            }else gasStation[i].setPrice_priority(3);
+        for(int i=0;i<gasStation.size();i++){
+            gasStation.get(i).setPrice_priority(gasStation.get(i).findPriorityGasStation(gasStation));
         }
     }
 
     public void setGasStationMarkers (boolean isRoute) {
         if (!isRoute) {
-            gasStationMarker = new Marker[gasStation.length];
+            gasStationMarker = new Marker[gasStation.size()];
 
             for (int i = 0; i < gasStationMarker.length; i++) {
                 if (gasStationMarker[i] != null) {
                     mapboxMap.removeMarker(gasStationMarker[i]);
                 }
 
+                int priority = gasStation.get(i).getPrice_priority();
                 IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
-                Icon icon = iconFactory.fromResource(gasStation[i].getPrice_priority() == 1 ? R.drawable.ic_gas_station_priority1 : gasStation[i].getPrice_priority() == 2 ? R.drawable.ic_gas_station_priority2 : R.drawable.ic_gas_station_priority3);
+
+                Icon icon = iconFactory.fromResource(priority == 1 ?
+                        R.drawable.ic_gas_station_priority1 : priority == 2 ?
+                        R.drawable.ic_gas_station_priority2 : R.drawable.ic_gas_station_priority3);
 
                 gasStationMarker[i] = mapboxMap.addMarker(new MarkerOptions()
-                        .position(gasStation[i].getLocation())
+                        .position(gasStation.get(i).getLocation())
                         .icon(icon)
-                        .title(gasStation[i].getName())
-                        .snippet("Preço Gasolina: R$ " + Double.toString(gasStation[i].getPrice_gas())));
+                        .title(gasStation.get(i).getName())
+                        .snippet("Preço Gasolina: R$ " + Double.toString(gasStation.get(i).getPrice_gas())));
             }
         }else {
             double distance_gasStation = 0.05;
@@ -291,22 +277,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     startPoint.setLongitude(points_route.get(i).getLongitude());
 
                     Location endPoint = new Location("locationGasStation");
-                    endPoint.setLatitude(gasStation[k].getLocation().getLatitude());
-                    endPoint.setLongitude(gasStation[k].getLocation().getLongitude());
+                    endPoint.setLatitude(gasStation.get(k).getLocation().getLatitude());
+                    endPoint.setLongitude(gasStation.get(k).getLocation().getLongitude());
 
                     double distance = startPoint.distanceTo(endPoint)/1000;
 
                     if (distance<=distance_gasStation) {
-                        IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
-                        Icon icon = iconFactory.fromResource(gasStation[k].getPrice_priority() == 1 ? R.drawable.ic_gas_station_priority1 : gasStation[k].getPrice_priority() == 2 ? R.drawable.ic_gas_station_priority2 : R.drawable.ic_gas_station_priority3);
+                        int priority = gasStation.get(i).getPrice_priority();
 
-                        gasStation_route.add(gasStation[k]);
+                        IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
+                        Icon icon = iconFactory.fromResource(priority == 1 ?
+                                R.drawable.ic_gas_station_priority1 : priority == 2 ?
+                                R.drawable.ic_gas_station_priority2 : R.drawable.ic_gas_station_priority3);
+
+                        gasStation_route.add(gasStation.get(k));
 
                         gasStationMarker[k] = mapboxMap.addMarker(new MarkerOptions()
-                                .position(gasStation[k].getLocation())
+                                .position(gasStation.get(k).getLocation())
                                 .icon(icon)
-                                .title(gasStation[k].getName())
-                                .snippet("Preço Gasolina: R$ " + Double.toString(gasStation[k].getPrice_gas())));
+                                .title(gasStation.get(k).getName())
+                                .snippet("Preço Gasolina: R$ " + Double.toString(gasStation.get(k).getPrice_gas())));
                     }
                 }
             }
@@ -374,7 +364,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 GeocoderFeature result = adapter.getItem(position);
-                escondeTeclado(input_search_origin);
+                hideBoard(input_search_origin);
                 setMarker(new LatLng(result.getLatitude(), result.getLongitude()), result.getText(), false);
             }
         });
@@ -389,7 +379,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 GeocoderFeature result = adapter.getItem(position);
-                escondeTeclado(input_search_destiny);
+                hideBoard(input_search_destiny);
                 setMarker(new LatLng(result.getLatitude(), result.getLongitude()), result.getText(), true);
             }
         });
@@ -438,16 +428,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .build();
             this.mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 5000, null);
 
-            Point waypoint1 = Point.fromLngLat(-51.219289, -30.141310);//Posto 6
-            Point waypoint2 = Point.fromLngLat(-51.185645, -30.126720);//Posto 11
-
             config = realm.where(Config.class).equalTo("active", true).findFirst();
             if (destinationPosition != null && originPosition != null) {
-                Route route = new Route(originPosition, destinationPosition);
                 routes.clear();
                 if (config.getId() == 1 || config.getId() == 2) {
-                    for (int i = 0; i < gasStation.length; i++) {
-                        Point waypoint = Point.fromLngLat(gasStation[i].getLocation().getLongitude(), gasStation[i].getLocation().getLatitude());
+                    for (int i = 0; i < gasStation.size(); i++) {
+                        Point waypoint = Point.fromLngLat(gasStation.get(i).getLocation().getLongitude(), gasStation.get(i).getLocation().getLatitude());
                         getRoute(originPosition, destinationPosition, waypoint);
                     }
                 } else {
@@ -476,14 +462,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void getRoute(Point origin, Point destination) {
-        getRoute (origin, destination, Point.fromLngLat(origin.longitude(), origin.latitude()));
-    }
-
     private void getRoute(Point origin, Point destination, Point waypoint) {
-        Config config = realm.where(Config.class).equalTo("active", true).findFirst();
-
-        if(config.getId()==1) {
             NavigationRoute.builder(this)
                     .addWaypoint(waypoint)
                     .accessToken(Mapbox.getAccessToken())
@@ -503,23 +482,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 return;
                             }
 
-                            points_route.clear();
-                            points_route.add(new LatLng(origin.latitude(), origin.longitude()));
-                            points_route.add(new LatLng(destination.latitude(), destination.longitude()));
-
-                            for (int i = 0; i < response.body().routes().get(0).legs().get(0).steps().size(); i++) {
-                                for (int k = 0; k < response.body().routes().get(0).legs().get(0).steps().get(i).intersections().size(); k++) {
-                                    double lng = response.body().routes().get(0).legs().get(0).steps().get(i).intersections().get(k).location().coordinates().get(0);
-                                    double lat = response.body().routes().get(0).legs().get(0).steps().get(i).intersections().get(k).location().coordinates().get(1);
-                                    points_route.add(new LatLng(lat, lng));
-                                }
-                            }
-
-                            setGasStationMarkers(true);
+                            //setGasStationMarkers(true);
 
                             currentRoute = response.body().routes().get(0);
 
-                            calculateCost(currentRoute.distance() / 1000, 0);
+                            //calculateCost(currentRoute.distance() / 1000, 0);
 
                             // Draw the route on the map
                             if (navigationMapRoute != null) {
@@ -527,127 +494,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             } else {
                                 navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
                             }
-
-                            routes.add(currentRoute);
-                            gasStationRoutes.add(gasStation_route);
-
-                            if (routes.size()>=gasStation.length){
-                                System.out.println ("Terminou as rotas");
-                                navigationMapRoute.addRoute(calculateBestRoute());
-                                routes.clear();
-                                gasStationRoutes.clear();
-                            }
-                            //navigationMapRoute.addRoutes(currentRoute);
-                            //System.out.println (navigationMapRoute.showAlternativeRoutes());
-                        }
-
-                        @Override
-                        public void onFailure(Call<DirectionsResponse> call, Throwable throwable) {
-                            Log.e(TAG, "Error: " + throwable.getMessage());
-                        }
-                    });
-        }else if (config.getId()==2){
-            NavigationRoute.builder(this)
-                    .addWaypoint(waypoint)
-                    .accessToken(Mapbox.getAccessToken())
-                    .origin(origin)
-                    .destination(destination)
-                    .build()
-                    .getRoute(new Callback<DirectionsResponse>() {
-                        @Override
-                        public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
-                            // You can get the generic HTTP info about the response
-                            Log.d(TAG, "Response code: " + response.code());
-                            if (response.body() == null) {
-                                Log.e(TAG, "No routes found, make sure you set the right user and access token.");
-                                return;
-                            } else if (response.body().routes().size() < 1) {
-                                Log.e(TAG, "No routes found");
-                                return;
-                            }
-
-                            points_route.clear();
-                            points_route.add(new LatLng(origin.latitude(), origin.longitude()));
-                            points_route.add(new LatLng(destination.latitude(), destination.longitude()));
-
-                            for (int i = 0; i < response.body().routes().get(0).legs().get(0).steps().size(); i++) {
-                                for (int k = 0; k < response.body().routes().get(0).legs().get(0).steps().get(i).intersections().size(); k++) {
-                                    double lng = response.body().routes().get(0).legs().get(0).steps().get(i).intersections().get(k).location().coordinates().get(0);
-                                    double lat = response.body().routes().get(0).legs().get(0).steps().get(i).intersections().get(k).location().coordinates().get(1);
-                                    points_route.add(new LatLng(lat, lng));
-                                }
-                            }
-
-                            setGasStationMarkers(true);
-
-                            currentRoute = response.body().routes().get(0);
-
-                            calculateCost(currentRoute.distance() / 1000, 0);
-
-                            // Draw the route on the map
-                            if (navigationMapRoute != null) {
-                                navigationMapRoute.removeRoute();
-                            } else {
-                                navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
-                            }
-
-                            routes.add(currentRoute);
-                            gasStationRoutes.add(gasStation_route);
-
-                            if (routes.size()>=gasStation.length){
-                                System.out.println ("Terminou as rotas");
-                                navigationMapRoute.addRoute(calculateBestTimeRoute());
-                                routes.clear();
-                                gasStationRoutes.clear();
-                            }
-                            //navigationMapRoute.addRoutes(currentRoute);
-                            //System.out.println (navigationMapRoute.showAlternativeRoutes());
-                        }
-
-                        @Override
-                        public void onFailure(Call<DirectionsResponse> call, Throwable throwable) {
-                            Log.e(TAG, "Error: " + throwable.getMessage());
-                        }
-                    });
-        }else {
-            NavigationRoute.builder(this)
-                    .accessToken(Mapbox.getAccessToken())
-                    .origin(origin)
-                    .destination(destination)
-                    .build()
-                    .getRoute(new Callback<DirectionsResponse>() {
-                        @Override
-                        public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
-                            // You can get the generic HTTP info about the response
-                            Log.d(TAG, "Response code: " + response.code());
-                            if (response.body() == null) {
-                                Log.e(TAG, "No routes found, make sure you set the right user and access token.");
-                                return;
-                            } else if (response.body().routes().size() < 1) {
-                                Log.e(TAG, "No routes found");
-                                return;
-                            }
-
-                            points_route.clear();
-
-                            setGasStationMarkers(true);
-
-                            currentRoute = response.body().routes().get(0);
-
-                            calculateCost(currentRoute.distance() / 1000, 0);
-
-                            // Draw the route on the map
-                            if (navigationMapRoute != null) {
-                                navigationMapRoute.removeRoute();
-                            } else {
-                                navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
-                            }
-
-                            routes.add(currentRoute);
-                            System.out.println ("Quantidade rotas: "+routes.size());
-
                             navigationMapRoute.addRoute(currentRoute);
-                            //System.out.println (navigationMapRoute.showAlternativeRoutes());
                         }
 
                         @Override
@@ -655,7 +502,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             Log.e(TAG, "Error: " + throwable.getMessage());
                         }
                     });
-        }
     }
 
     private DirectionsRoute calculateBestRoute (){
