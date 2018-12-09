@@ -3,11 +3,13 @@ package com.economicroute.economicroute;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.location.GnssStatus;
 import android.location.LocationManager;
 import android.os.Build;
@@ -20,10 +22,21 @@ import com.economicroute.economicroute.model.Config;
 import com.economicroute.economicroute.model.Gas_station;
 import com.economicroute.economicroute.model.Route;
 import com.economicroute.economicroute.model.Vehicle;
+import com.mapbox.api.directions.v5.DirectionsCriteria;
+import com.mapbox.api.directions.v5.MapboxDirections;
+import com.mapbox.api.directions.v5.models.DirectionsResponse;
+import com.mapbox.api.directions.v5.models.DirectionsRoute;
+import com.mapbox.api.optimization.v1.MapboxOptimization;
+import com.mapbox.api.optimization.v1.models.OptimizationResponse;
 import com.mapbox.geocoder.service.models.GeocoderFeature;
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.LineString;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
+import com.mapbox.mapboxsdk.annotations.Polyline;
+import com.mapbox.mapboxsdk.annotations.PolylineOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -31,6 +44,7 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+
 import android.location.Location;
 import android.view.Window;
 import android.view.WindowManager;
@@ -43,8 +57,11 @@ import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.mapbox.mapboxsdk.geometry.LatLng;
+
 import android.support.annotation.NonNull;
+
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.modes.CameraMode;
 import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
@@ -56,17 +73,17 @@ import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 // classes to calculate a route
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
-import com.mapbox.api.directions.v5.models.DirectionsResponse;
-import com.mapbox.api.directions.v5.models.DirectionsRoute;
 
 import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 import android.util.Log;
 // classes needed to launch navigation UI
 import android.view.View;
 import android.widget.Button;
+
 import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener, PermissionsListener {
@@ -80,16 +97,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     // variables for adding a marker
     private Marker destinationMarker;
     private Marker originMarker;
-    private Marker [] gasStationMarker;
+    private List<Marker> gasStationMarker;
     private LatLng originCoord;
     private LatLng destinationCoord;
 
     // variables for calculating and drawing a route
     private Point originPosition;
     private Point destinationPosition;
-    private DirectionsRoute currentRoute;
+    DirectionsRoute currentRoute;
     private static final String TAG = "DirectionsActivity";
     private NavigationMapRoute navigationMapRoute;
+    private MapboxDirections.Builder mapboxDirections;
 
     // buttons
     private Button button_navigation_view;
@@ -109,15 +127,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Realm realm;
     private Vehicle vehicleUsed;
     private Config config;
+    private NavigationRoute.Builder navigationRoute;
 
     //array models
-    List<Gas_station> gasStation = new ArrayList<Gas_station>(22);
-    ArrayList<Gas_station> gasStation_route = new ArrayList<>();
-    ArrayList<DirectionsRoute> routes = new ArrayList<>();
-    ArrayList<ArrayList> gasStationRoutes = new ArrayList<>();
-    private ArrayList<LatLng> points_route = new ArrayList<>();
+    private List<Gas_station> gasStation = new ArrayList<>(22);
+    private List<Marker> intersectionsMarker = new ArrayList<>();
+    private List<Route> individualRoutes;
+    private List<Route> geralRoutes;
 
-    private int gasTank = 6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,7 +154,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             }
         }
-
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
@@ -156,16 +172,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         realm = Realm.getDefaultInstance();
 
-        LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+        LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         boolean isOn = manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-        if(!isOn){
-          createNoGpsDialog();
+        if (!isOn) {
+            createNoGpsDialog();
         }
         onClickButton();
     }
 
-    private void createNoGpsDialog(){
+    private void createNoGpsDialog() {
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -194,22 +210,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         originCoord = new LatLng(originLocation.getLatitude(), originLocation.getLongitude());
         mapboxMap.addOnMapClickListener(this);
         setArrayGasStation();
-        setGasStationMarkers(false);
+        setGasStationMarkers();
     }
 
-    public void hideBoard (EditText input) {
+    public void hideBoard(EditText input) {
         ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
                 .hideSoftInputFromWindow(input.getWindowToken(), 0);
     }
 
     @Override
-    public void onMapClick(@NonNull LatLng point){
+    public void onMapClick(@NonNull LatLng point) {
         hideBoard(input_search_origin);
         hideBoard(input_search_destiny);
         setMarker(point, "", true);
     }
 
-    public void setArrayGasStation (){
+    public void setArrayGasStation() {
         gasStation.add(new Gas_station("Posto 1", 4.379, new LatLng(-30.155677, -51.142399)));
         gasStation.add(new Gas_station("Posto 2", 5.099, new LatLng(-30.148918, -51.148789)));
         gasStation.add(new Gas_station("Posto 3", 4.946, new LatLng(-30.148083, -51.152083)));
@@ -233,19 +249,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         gasStation.add(new Gas_station("Posto 21", 4.819, new LatLng(-30.141310, -51.219289)));
         gasStation.add(new Gas_station("Posto 22", 5.096, new LatLng(-30.126720, -51.185645)));
 
-        for(int i=0;i<gasStation.size();i++){
+        for (int i = 0; i < gasStation.size(); i++) {
             gasStation.get(i).setPrice_priority(gasStation.get(i).findPriorityGasStation(gasStation));
         }
+        individualRoutes = new ArrayList<>(gasStation.size());
+        geralRoutes = new ArrayList<>(gasStation.size());
     }
 
-    public void setGasStationMarkers (boolean isRoute) {
-        if (!isRoute) {
-            gasStationMarker = new Marker[gasStation.size()];
+    public void setGasStationMarkers() {
+            gasStationMarker = new ArrayList<Marker>(gasStation.size());
 
-            for (int i = 0; i < gasStationMarker.length; i++) {
-                if (gasStationMarker[i] != null) {
-                    mapboxMap.removeMarker(gasStationMarker[i]);
-                }
+            for (int i = 0; i < gasStation.size(); i++) {
 
                 int priority = gasStation.get(i).getPrice_priority();
                 IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
@@ -254,56 +268,58 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         R.drawable.ic_gas_station_priority1 : priority == 2 ?
                         R.drawable.ic_gas_station_priority2 : R.drawable.ic_gas_station_priority3);
 
-                gasStationMarker[i] = mapboxMap.addMarker(new MarkerOptions()
+                gasStationMarker.add(mapboxMap.addMarker(new MarkerOptions()
                         .position(gasStation.get(i).getLocation())
                         .icon(icon)
                         .title(gasStation.get(i).getName())
-                        .snippet("Preço Gasolina: R$ " + Double.toString(gasStation.get(i).getPrice_gas())));
+                        .snippet("Preço Gasolina: R$ " +
+                                Double.toString(gasStation.get(i).getPrice_gas()))));
             }
-        }else {
-            double distance_gasStation = 0.05;
+    }
 
-            for (int i=0; i<gasStationMarker.length; i++){
-                if (gasStationMarker[i] != null) {
-                    mapboxMap.removeMarker(gasStationMarker[i]);
-                }
+    public void setMarkersIntersections (Route bestRoute) {
+        for (int i = 0; i < intersectionsMarker.size(); i++) {
+            if (intersectionsMarker.get(i) != null) {
+                mapboxMap.removeMarker(intersectionsMarker.get(i));
             }
+        }
 
-            gasStation_route.clear();
-            for (int i=0; i<points_route.size(); i++){
-                for (int k=0; k<gasStationMarker.length; k++){
-                    Location startPoint = new Location("locationRoute");
-                    startPoint.setLatitude(points_route.get(i).getLatitude());
-                    startPoint.setLongitude(points_route.get(i).getLongitude());
+        intersectionsMarker.clear();
 
-                    Location endPoint = new Location("locationGasStation");
-                    endPoint.setLatitude(gasStation.get(k).getLocation().getLatitude());
-                    endPoint.setLongitude(gasStation.get(k).getLocation().getLongitude());
-
-                    double distance = startPoint.distanceTo(endPoint)/1000;
-
-                    if (distance<=distance_gasStation) {
-                        int priority = gasStation.get(i).getPrice_priority();
-
-                        IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
-                        Icon icon = iconFactory.fromResource(priority == 1 ?
-                                R.drawable.ic_gas_station_priority1 : priority == 2 ?
-                                R.drawable.ic_gas_station_priority2 : R.drawable.ic_gas_station_priority3);
-
-                        gasStation_route.add(gasStation.get(k));
-
-                        gasStationMarker[k] = mapboxMap.addMarker(new MarkerOptions()
-                                .position(gasStation.get(k).getLocation())
-                                .icon(icon)
-                                .title(gasStation.get(k).getName())
-                                .snippet("Preço Gasolina: R$ " + Double.toString(gasStation.get(k).getPrice_gas())));
-                    }
-                }
-            }
+        for (int i = 0; i < bestRoute.findIntersections().size(); i++) {
+            intersectionsMarker.add(mapboxMap.addMarker(new MarkerOptions()
+                    .position(bestRoute.findIntersections().get(i))
+                    .title("Intersection")));
         }
     }
 
-    public void onClickButton () {
+    public void setMarkersInRoute(Route bestRoute) {
+        for (int i = 0; i < gasStationMarker.size(); i++) {
+            if (gasStationMarker.get(i) != null) {
+                mapboxMap.removeMarker(gasStationMarker.get(i));
+            }
+        }
+        gasStationMarker.clear();
+
+        gasStationMarker = new ArrayList<>(bestRoute.getGasStationInRoute().size());
+
+        for(int i=0; i < bestRoute.getGasStationInRoute().size(); i++) {
+            int priority = bestRoute.getGasStationInRoute().get(i).getPrice_priority();
+            IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
+
+            Icon icon = iconFactory.fromResource(priority == 1 ?
+                    R.drawable.ic_gas_station_priority1 : priority == 2 ?
+                    R.drawable.ic_gas_station_priority2 : R.drawable.ic_gas_station_priority3);
+
+            gasStationMarker.add(mapboxMap.addMarker(new MarkerOptions()
+                    .position(bestRoute.getGasStationInRoute().get(i).getLocation())
+                    .icon(icon)
+                    .title(bestRoute.getGasStationInRoute().get(i).getName())
+                    .snippet("Preço Gasolina: R$ " + Double.toString(bestRoute.getGasStationInRoute().get(i).getPrice_gas()))));
+        }
+    }
+
+    public void onClickButton() {
         setDestiny();
         setOrigin();
 
@@ -341,12 +357,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 setMarker(new LatLng(originLocation.getLatitude(), originLocation.getLongitude()), "", false);
             }
         });
-        open_search_simulate_origin.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                if(box_input_search_origin.getVisibility()==View.GONE) {
+        open_search_simulate_origin.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (box_input_search_origin.getVisibility() == View.GONE) {
                     open_search_simulate_origin.animate().rotation(180);
                     box_input_search_origin.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     open_search_simulate_origin.animate().rotation(0);
                     box_input_search_origin.setVisibility(View.GONE);
                     setMarker(new LatLng(originLocation.getLatitude(), originLocation.getLongitude()), "Minha Origem", false);
@@ -355,7 +371,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    public void setOrigin (){
+    public void setOrigin() {
         final GeocoderAdapter adapter = new GeocoderAdapter(this);
         input_search_origin.setLines(1);
         input_search_origin.setAdapter(adapter);
@@ -370,7 +386,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    public void setDestiny () {
+    public void setDestiny() {
         final GeocoderAdapter adapter = new GeocoderAdapter(this);
         input_search_destiny.setLines(1);
         input_search_destiny.setAdapter(adapter);
@@ -395,7 +411,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .position(destinationCoord)
                     .title(text));
             input_search_destiny.setText(text);
-        }else{
+        } else {
             if (originMarker != null) {
                 mapboxMap.removeMarker(originMarker);
             }
@@ -414,7 +430,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void updateMap(double latitude, double longitude) {
-        vehicleUsed=realm.where(Vehicle.class).equalTo("isBeingUsed", true).findFirst();
+        vehicleUsed = realm.where(Vehicle.class).equalTo("isBeingUsed", true).findFirst();
 
         if (vehicleUsed != null && vehicleUsed.isValid()) {
             if (destinationCoord != null)
@@ -430,15 +446,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             config = realm.where(Config.class).equalTo("active", true).findFirst();
             if (destinationPosition != null && originPosition != null) {
-                routes.clear();
-                if (config.getId() == 1 || config.getId() == 2) {
                     for (int i = 0; i < gasStation.size(); i++) {
-                        Point waypoint = Point.fromLngLat(gasStation.get(i).getLocation().getLongitude(), gasStation.get(i).getLocation().getLatitude());
-                        getRoute(originPosition, destinationPosition, waypoint);
+                        List<Point> waypoints = new ArrayList<>(1);
+                        waypoints.add(Point.fromLngLat(gasStation.get(i).getLocation().getLongitude(), gasStation.get(i).getLocation().getLatitude()));
+                        getRoute(originPosition, destinationPosition, waypoints, false);
                     }
-                } else {
-                    getRoute(originPosition, destinationPosition, Point.fromLngLat(0, 0));
-                }
 
                 CameraPosition cameraRoute = new CameraPosition.Builder()
                         .target(new LatLng(originPosition.latitude(), originPosition.longitude()))
@@ -457,116 +469,96 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     button_navigation_view.setBackgroundResource(R.color.mapboxGrayLight);
                 }
             }
-        }else {
+        } else {
             Toast.makeText(MainActivity.this, "Selecione um veículo para gerar rotas!", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void getRoute(Point origin, Point destination, Point waypoint) {
-            NavigationRoute.builder(this)
-                    .addWaypoint(waypoint)
-                    .accessToken(Mapbox.getAccessToken())
-                    .origin(origin)
-                    .destination(destination)
-                    .build()
-                    .getRoute(new Callback<DirectionsResponse>() {
-                        @Override
-                        public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
-                            // You can get the generic HTTP info about the response
-                            Log.d(TAG, "Response code: " + response.code());
-                            if (response.body() == null) {
-                                Log.e(TAG, "No routes found, make sure you set the right user and access token.");
-                                return;
-                            } else if (response.body().routes().size() < 1) {
-                                Log.e(TAG, "No routes found");
-                                return;
+    private void getRoute(Point origin, Point destination, List<Point> waypoints, boolean secondRoutes) {
+        navigationRoute = NavigationRoute.builder(this)
+                .profile(DirectionsCriteria.PROFILE_DRIVING)
+                .accessToken(Mapbox.getAccessToken())
+                .origin(origin)
+                .destination(destination);
+
+                for (int i = 0; i < waypoints.size(); i++) {
+                    navigationRoute.addWaypoint(waypoints.get(i));
+                }
+
+                navigationRoute.build().getRoute(new Callback<DirectionsResponse>() {
+                    @Override
+                    public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                        // You can get the generic HTTP info about the response
+                        Log.d(TAG, "Response code: " + response.code());
+                        if (response.body() == null) {
+                            Log.e(TAG, "No routes found, make sure you set the right user and access token.");
+                            return;
+                        } else if (response.body().routes().size() < 1) {
+                            Log.e(TAG, "No routes found");
+                            return;
+                        }
+
+                        currentRoute = response.body().routes().get(0);
+
+                        Route newRoute = new Route (originPosition, destinationPosition, currentRoute);
+                        newRoute.setGasStationInRoute(newRoute.findGasStationsInRoute(gasStation));
+
+                        if (!secondRoutes)
+                            individualRoutes.add(newRoute);
+                        else
+                            geralRoutes.add(newRoute);
+
+                        if(individualRoutes.size() >= 22 && !secondRoutes) {
+                            for(int i = 0; i < individualRoutes.size(); i++) {
+                                List<Point> waypoints = new ArrayList<>(individualRoutes.get(i).getGasStationInRoute().size());
+                                for(int k = 0; k < individualRoutes.get(i).getGasStationInRoute().size(); k++) {
+                                    waypoints.add(Point.fromLngLat(
+                                            individualRoutes.get(i).getGasStationInRoute().get(k).getLocation().getLongitude(),
+                                            individualRoutes.get(i).getGasStationInRoute().get(k).getLocation().getLatitude()
+                                    ));
+                                }
+                                getRoute(originPosition, destinationPosition, waypoints, true);
                             }
+                            individualRoutes.clear();
+                        }
 
-                            //setGasStationMarkers(true);
-
-                            currentRoute = response.body().routes().get(0);
-
-                            //calculateCost(currentRoute.distance() / 1000, 0);
-
+                        if (geralRoutes.size() >= 22 && secondRoutes) {
                             // Draw the route on the map
                             if (navigationMapRoute != null) {
                                 navigationMapRoute.removeRoute();
                             } else {
                                 navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
                             }
-                            navigationMapRoute.addRoute(currentRoute);
+                            vehicleUsed = realm.where(Vehicle.class).equalTo("isBeingUsed", true).findFirst();
+                            navigationMapRoute.addRoute(geralRoutes.get(0).getRoute());
+                            setMarkersInRoute(geralRoutes.get(0));
+                            Route teste = Management.findBestRoute(geralRoutes, vehicleUsed);
+                            geralRoutes.clear();
+                            // navigationMapRoute.addRoute(newRoute.getRoute());
                         }
+                       // setMarkersInRoute(newRoute);
+                    }
 
-                        @Override
-                        public void onFailure(Call<DirectionsResponse> call, Throwable throwable) {
-                            Log.e(TAG, "Error: " + throwable.getMessage());
-                        }
-                    });
+                    @Override
+                    public void onFailure(Call<DirectionsResponse> call, Throwable throwable) {
+                        Log.e(TAG, "Error: " + throwable.getMessage());
+                    }
+                });
     }
 
-    private DirectionsRoute calculateBestRoute (){
-    DirectionsRoute bestRoute=routes.get(0);
-
-    for(int i=0;i<routes.size();i++){
-        if (i==0)
-            bestRoute=routes.get(i);
-        else
-            if (bestRoute.distance()>routes.get(i).distance())
-                bestRoute=routes.get(i);
-    }
-
-    return bestRoute;
-    }
-
-    private DirectionsRoute calculateBestTimeRoute (){
-        DirectionsRoute bestRoute=routes.get(0);
-
-        for(int i=0;i<routes.size();i++){
-            if (i==0)
-                bestRoute=routes.get(i);
-            else
-            if (bestRoute.duration()>routes.get(i).duration())
-                bestRoute=routes.get(i);
-        }
-
-        return bestRoute;
-    }
-
-    private void calculateCost(double distanceRoute, double timeRoute) {
-        DecimalFormat distance_formated = new DecimalFormat("#,###.00");
-        vehicleUsed = realm.where(Vehicle.class).equalTo("isBeingUsed", true).findFirst();
-
-        double spent = vehicleUsed.getConsumption(), price_fuel = 4.5, liters_fuel;
-
-        if (gasStation_route.size() >= 1) {
-            double best_price = gasStation_route.get(0).getPrice_gas();
-            for (int i = 0; i < gasStation_route.size(); i++) {
-                if (gasStation_route.get(i).getPrice_gas() < best_price) {
-                    best_price = gasStation_route.get(i).getPrice_gas();
-                }
+    private void generateRoutesWithGasStations(List<Route> routesIndividualGasStation) {
+        for (int i = 0; i < routesIndividualGasStation.size(); i++) {
+            List<Gas_station> gasStationsInRoute = routesIndividualGasStation.get(i).getGasStationInRoute();
+            List<Point> waypoints = new ArrayList<>(gasStationsInRoute.size());
+            for (int k = 0; k < gasStationsInRoute.size(); k++) {
+                waypoints.add(Point.fromLngLat(gasStationsInRoute.get(k)
+                        .getLocation().getLongitude(), gasStationsInRoute
+                        .get(k).getLocation().getLatitude()));
             }
-            price_fuel = best_price;
         }
-
-        liters_fuel = distanceRoute / spent;
-        double price = liters_fuel * price_fuel;
-        DecimalFormat price_formated = new DecimalFormat("#,###.00");
-
-        if (distanceRoute < 1) {
-            distance_view.setText("Distância: 0" + distance_formated.format(distanceRoute) + " Km");
-        } else
-            distance_view.setText("Distância: " + distance_formated.format(distanceRoute) + " Km");
-
-        distance_view.setText("Distância: " + distance_formated.format(distanceRoute) + " Km");
-
-        price_fuel_view.setText("Preço Gasolina: R$ " + Double.toString(price_fuel));
-
-        if (price < 1) {
-            spent_view.setText("Gasto (consid. cons. de "+vehicleUsed.getConsumption()+" Km/Litro): R$ 0" + price_formated.format(price));
-        } else spent_view.setText("Gasto (consid. cons. de "+vehicleUsed.getConsumption()+" Km/Litro): " + price_formated.format(price));
     }
 
-    @SuppressWarnings( {"MissingPermission"})
+    @SuppressWarnings({"MissingPermission"})
     private void enableLocationComponent() {
         // Check if permissions are enabled and if not request
         if (PermissionsManager.areLocationPermissionsGranted(this)) {

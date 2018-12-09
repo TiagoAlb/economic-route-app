@@ -30,10 +30,15 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-navigation-ui:0.23.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-navigation-ui:0.24.1'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-navigation:0.24.1'
     implementation('com.mapbox.mapboxsdk:mapbox-android-geocoder:1.0.0@aar') {
         transitive = true
     }
+/*
+    implementation ('com.mapbox.mapboxsdk:mapbox-android-sdk:3.0.0@aar'){
+        transitive=true
+    }*/
     implementation 'com.android.support:support-v4:28.0.0'
     implementation 'com.android.support:support-vector-drawable:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
