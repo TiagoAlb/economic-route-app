@@ -295,11 +295,20 @@ public class NewVehicleActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, years);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_year_vehicle.setAdapter(adapter);
+        setVehicleFuelFailed();
     }
 
     public void setVehicleFuel(JSONObject vehicleFuel) throws JSONException {
         String[] fuels = new String[1];
         fuels[0] = vehicleFuel.getString("combustivel");
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, fuels);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner_fuel_vehicle.setAdapter(adapter);
+    }
+
+    public void setVehicleFuelFailed() {
+        String[] fuels = new String[1];
+        fuels[0] = "Gasolina";
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, fuels);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_fuel_vehicle.setAdapter(adapter);

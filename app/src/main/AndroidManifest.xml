@@ -32,6 +32,7 @@
         <activity
             android:name=".ManageVehicleActivity"
             android:theme="@style/AppThemeActionBarEconomicRoute" />
+        <activity android:name=".GasStationsManagementActivity"></activity>
     </application>
 
 </manifest>
