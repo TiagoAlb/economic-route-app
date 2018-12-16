@@ -26,7 +26,7 @@ public class CustomApplication extends Application {
         Realm realm;
         realm = Realm.getDefaultInstance();
 
-        Config [] initial_configs = new Config [3];
+        Config [] initial_configs = new Config [1];
 
         //Config 1
         initial_configs[0] = new Config();
@@ -36,7 +36,7 @@ public class CustomApplication extends Application {
         initial_configs[0].setDescription("Quando marcada, gerencia as rotas do mapa de" +
                 " acordo com o preço dos postos na localidade.");
         initial_configs[0].setActive(true);
-        //Config 2
+       /* //Config 2
         initial_configs[1] = new Config();
         initial_configs[1].setId(2);
         initial_configs[1].setGroup(1);
@@ -52,7 +52,7 @@ public class CustomApplication extends Application {
         initial_configs[2].setDescription("Quando marcada, gerencia as rotas do mapa de" +
                 " acordo com a menor distância até a chegada ao destino.");
         initial_configs[2].setActive(false);
-
+*/
         for(int i=0;i<initial_configs.length;i++) {
             try {
                 realm.beginTransaction();

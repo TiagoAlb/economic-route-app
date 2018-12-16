@@ -34,6 +34,7 @@ public class ManageVehicleActivity extends AppCompatActivity {
     private TextView vehicle_use_brand;
     private TextView vehicle_use_fuel;
     private TextView vehicle_use_fuel_quantity;
+    private TextView vehicle_use_consumption;
     private LinearLayout vehicle_use;
     private TextView toolbar_title;
     private ListView vehicle_list;
@@ -57,6 +58,7 @@ public class ManageVehicleActivity extends AppCompatActivity {
         vehicle_use_fuel = findViewById(R.id.vehicle_use_fuel);
         vehicle_use_fuel_quantity = findViewById(R.id.vehicle_use_fuel_quantity);
         vehicle_use = findViewById(R.id.vehicle_use);
+        vehicle_use_consumption = findViewById(R.id.vehicle_use_consumption);
 
         final ManageVehicleAdapter adapter = new ManageVehicleAdapter(this, vehicles);
 
@@ -101,7 +103,8 @@ public class ManageVehicleActivity extends AppCompatActivity {
             vehicle_use_name.setText(vehicle.getName());
             vehicle_use_brand.setText(vehicle.getBrand() + " - " + vehicle.getType());
             vehicle_use_fuel.setText(vehicle.getFuel_name());
-            vehicle_use_fuel_quantity.setText(vehicle.getFuel_quantity() + " / " + vehicle.getTank());
+            vehicle_use_fuel_quantity.setText(vehicle.getFuel_quantity() + " / " + vehicle.getTank()+" L");
+            vehicle_use_consumption.setText("Cons.: "+vehicle.getConsumption()+" Km/L");
             vehicle_use.setVisibility(View.VISIBLE);
         } else {
             vehicle_use.setVisibility(View.GONE);

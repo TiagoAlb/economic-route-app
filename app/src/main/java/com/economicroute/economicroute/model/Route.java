@@ -22,7 +22,8 @@ public class Route {
     private Double timeRoute;
     private Point origin;
     private Point destiny;
-    private List<Gas_station> gasStationInRoute;
+    private List<Gas_station> gasStationsInRoute;
+    private List<Gas_station> gasStationsToFuel;
     private List<LatLng> points_route;
 
     public Route (Point origin, Point destiny, DirectionsRoute route) {
@@ -31,7 +32,7 @@ public class Route {
         this.route = route;
 
         setTimeRoute(route.duration().doubleValue());
-        setDistanceRoute(route.distance().doubleValue());
+        setDistanceRoute(route.distance().doubleValue()/1000);
     }
 
     public DirectionsRoute getRoute() { return route; }
@@ -58,9 +59,13 @@ public class Route {
 
     public void setDestiny(Point destiny) { this.destiny = destiny; }
 
-    public List<Gas_station> getGasStationInRoute() { return gasStationInRoute; }
+    public List<Gas_station> getGasStationsInRoute() { return gasStationsInRoute; }
 
-    public void setGasStationInRoute(List<Gas_station> gasStationInRoute) { this.gasStationInRoute = gasStationInRoute; }
+    public void setGasStationsInRoute(List<Gas_station> gasStationsInRoute) { this.gasStationsInRoute = gasStationsInRoute; }
+
+    public List<Gas_station> getGasStationsToFuel() { return gasStationsToFuel; }
+
+    public void setGasStationsToFuel(List<Gas_station> gasStationsToFuel) { this.gasStationsToFuel = gasStationsToFuel; }
 
     public List<LatLng> getPoints_route() { return points_route; }
 
@@ -72,7 +77,7 @@ public class Route {
 
     // calculing methods
     public List<Gas_station> findGasStationsInRoute(List<Gas_station> gas_stations) {
-        double configDistanceTwoPointsGasStation = 0.2;
+        double configDistanceTwoPointsGasStation = 0.4;
         double configDistanceTwoPointsIntersections = 0.04;
         List<RouteLeg> legs = getRoute().legs();
         List<Gas_station> gasStationInRoute = new ArrayList<Gas_station>();

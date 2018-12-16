@@ -300,7 +300,6 @@ public class NewVehicleActivity extends AppCompatActivity {
     public void setVehicleFuel(JSONObject vehicleFuel) throws JSONException {
         String[] fuels = new String[1];
         fuels[0] = vehicleFuel.getString("combustivel");
-
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, fuels);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_fuel_vehicle.setAdapter(adapter);
@@ -324,9 +323,8 @@ public class NewVehicleActivity extends AppCompatActivity {
                         public void run() {
                             try {
                                 JSONArray arrayJson = null;
-                                if (typeRequest != "fuel") {
+                                if (typeRequest != "fuel")
                                     arrayJson = new JSONArray(myResponse);
-                                }
                                 if (typeRequest == "brand")
                                     setVehicleBrand(arrayJson);
                                 else if (typeRequest == "name")

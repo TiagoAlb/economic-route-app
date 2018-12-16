@@ -187,17 +187,35 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
-                    android:layout_marginLeft="18dp"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="19dp"
+                    android:layout_marginTop="30dp"
                     tools:text="Distancia: " />
 
                 <TextView
+                    android:id="@+id/vehicle_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="19dp"
+                    android:layout_marginTop="5dp"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    tools:text="Veículo" />
+
+                <TextView
                     android:id="@+id/price_fuel_view"
-                    android:layout_width="match_parent"
+                    android:layout_width="356dp"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/distance_view"
                     android:layout_alignLeft="@+id/distance_view"
-                    tools:text="Preço Gasolina: " />
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp"
+                    tools:text="Preço Combustível: " />
 
                 <TextView
                     android:id="@+id/spent_view"
@@ -205,6 +223,8 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/price_fuel_view"
                     android:layout_alignLeft="@+id/price_fuel_view"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginTop="-1dp"
                     android:textColor="@android:color/holo_red_dark"
                     tools:text="Valor Final:" />
 

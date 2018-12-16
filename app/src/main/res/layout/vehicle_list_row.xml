@@ -63,7 +63,7 @@
                                 android:maxLines="1"
                                 android:text="Nome do Veículo"
                                 android:textAppearance="?android:attr/textAppearanceMedium"
-                                android:textColor="@color/secondary_text" />
+                                android:textColor="@color/primary_text" />
 
                             <TextView
                                 android:id="@+id/vehicle_brand"
